@@ -1,1 +1,1 @@
-docker build -t iot-benchmark/cassandra .
+sudo docker build -t iot-benchmark/cassandra .

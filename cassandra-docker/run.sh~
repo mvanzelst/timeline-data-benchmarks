@@ -1,5 +1,0 @@
-#!/bin/bash
-HOST_IP=172.17.42.1
-sudo docker run -t -i --rm -v `realpath cassandra-1`:/etc/cassandra -v /tmp/cassandra-1-storage:/storage -p 172.17.42.1:7001:7000 iot-benchmark/cassandra /usr/sbin/cassandra
-sudo docker run -t -i --rm -v `realpath cassandra-2`:/etc/cassandra -v /tmp/cassandra-2-storage:/storage -p 172.17.42.1:7002:7000 iot-benchmark/cassandra /usr/sbin/cassandra
-sudo docker run -t -i --rm -v `realpath cassandra-3`:/etc/cassandra -v /tmp/cassandra-3-storage:/storage -p 172.17.42.1:7003:7000 iot-benchmark/cassandra /usr/sbin/cassandra
