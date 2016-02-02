@@ -1,4 +1,4 @@
-package nl.trifork.blog.timelinedata.storage;
+package nl.trifork.blog.timelinedata.store;
 
 public class MongoDbTimelineStore implements TimelineStore {
 

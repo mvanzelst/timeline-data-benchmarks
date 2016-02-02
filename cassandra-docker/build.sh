@@ -1,1 +1,2 @@
-sudo docker build -t iot-benchmark/cassandra .
+#!/bin/bash
+sudo docker build -t timeline-benchmark/cassandra .

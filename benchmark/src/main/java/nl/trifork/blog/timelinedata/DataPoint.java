@@ -1,4 +1,4 @@
-package nl.trifork.blog.timelinedata.model;
+package nl.trifork.blog.timelinedata;
 
 import org.apache.commons.codec.digest.DigestUtils;
 

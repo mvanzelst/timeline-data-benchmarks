@@ -1,19 +1,21 @@
-package nl.trifork.blog.timelinedata.storage.mapper;
+package nl.trifork.blog.timelinedata.mapper;
 
 import com.datastax.driver.core.*;
-import com.datastax.driver.core.exceptions.QueryTimeoutException;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select.Where;
-import nl.trifork.blog.timelinedata.model.DataPoint;
-import nl.trifork.blog.timelinedata.storage.CassandraTimelineStore;
-import nl.trifork.blog.timelinedata.storage.TimelineStore;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import com.google.common.collect.Iterators;
+import nl.trifork.blog.timelinedata.DataPoint;
+import nl.trifork.blog.timelinedata.store.CassandraTimelineStore;
+import nl.trifork.blog.timelinedata.store.TimelineStore;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class CassandraTimelineMapper implements TimelineMapper {
+
+    private final int batchSize = 25;
 
     private TimelineStore timelineStore;
 
@@ -22,28 +24,19 @@ public class CassandraTimelineMapper implements TimelineMapper {
         timelineStore.initSchema();
     }
 
-    public void storeDataPoints(List<DataPoint> datapoints) {
-        while (true) {
-            Session session = (Session) timelineStore.getConnection();
-            try {
-
-                PreparedStatement ps = session.prepare("INSERT INTO sensor_data (sensor_id, timestamp, data) VALUES (?, ?, ?)");
-                BatchStatement batch = new BatchStatement();
-                for (DataPoint dataPoint : datapoints) {
-                    batch.add(ps.bind(dataPoint.sensorId, dataPoint.timestamp, ByteBuffer.wrap(dataPoint.data)));
-                }
-
-                session.execute(batch);
-                session.close();
-            } catch (QueryTimeoutException e) {
-                System.err.println(ExceptionUtils.getStackTrace(e));
-                // Retry
-                continue;
-            } finally {
-                session.close();
-            }
-            break;
-        }
+    public void storeDataPoints(Iterator<DataPoint> dataPoints) {
+        Session session = (Session) timelineStore.getConnection();
+        PreparedStatement ps = session.prepare(
+                "INSERT INTO sensor_data (sensor_id, timestamp, data) VALUES (?, ?, ?)");
+        Iterators.partition(dataPoints, batchSize)
+                .forEachRemaining(dataPointBatch -> {
+                    BatchStatement batch = new BatchStatement(BatchStatement.Type.UNLOGGED);
+                    for (DataPoint dataPoint : dataPointBatch) {
+                        batch.add(ps.bind(dataPoint.sensorId, dataPoint.timestamp, ByteBuffer.wrap(dataPoint.data)));
+                    }
+                    session.execute(batch);
+                });
+        session.close();
     }
 
     public List<DataPoint> getDataPoints(String sensorId, long startTimestamp, long endTimestamp, int limit) {
