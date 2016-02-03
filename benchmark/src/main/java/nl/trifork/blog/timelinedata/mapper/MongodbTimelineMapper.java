@@ -9,8 +9,11 @@ import com.mongodb.client.MongoDatabase;
 import nl.trifork.blog.timelinedata.DataPoint;
 import nl.trifork.blog.timelinedata.DataPointIterator;
 import nl.trifork.blog.timelinedata.store.MongoDbTimelineStore;
+import nl.trifork.blog.timelinedata.store.TimelineStore;
 import org.bson.Document;
 import org.bson.types.Binary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
@@ -18,9 +21,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MongodbTimelineMapper implements TimelineMapper {
+
+    private static final Logger logger = LoggerFactory.getLogger(TimelineStore.class);
+
+    private final int batchSize = 1000;
 
     private final MongoDbTimelineStore timelineStore;
     private final RetryTemplate retryTemplate;
@@ -39,7 +47,8 @@ public class MongodbTimelineMapper implements TimelineMapper {
         MongoDatabase db = (MongoDatabase) timelineStore.getConnection();
         MongoCollection<Document> timeSeriesCollection = db.getCollection("time_series");
         timeSeriesCollection.withWriteConcern(WriteConcern.FSYNCED);
-        Iterators.partition(dataPointIterator, 1000)
+        AtomicInteger atomicInteger = new AtomicInteger();
+        Iterators.partition(dataPointIterator, batchSize)
                 .forEachRemaining(dataPointBatch -> {
                     List<Document> documents = dataPointBatch.stream().map(dataPoint -> {
                         Document document = new Document();
@@ -48,12 +57,16 @@ public class MongodbTimelineMapper implements TimelineMapper {
                         document.append("timestamp", dataPoint.timestamp);
                         return document;
                     }).collect(Collectors.toList());
+                    atomicInteger.addAndGet(documents.size());
                     timeSeriesCollection.insertMany(documents);
+                    logger.info("Inserted {} records out of {} - {}%",
+                            atomicInteger.get(), dataPointIterator.size(),
+                            ((double) atomicInteger.get() / dataPointIterator.size()) * 100);
                 });
     }
 
-    public List<DataPoint> getDataPoints(int sensorId, long startTimestamp,
-                                         long endTimestamp, int limit) {
+    @Override
+    public List<DataPoint> getDataPoints(int sensorId) {
         MongoDatabase db = (MongoDatabase) timelineStore.getConnection();
         FindIterable<Document> documents = db.getCollection("time_series").find(new Document("sensorId", sensorId));
         List<DataPoint> output = new ArrayList<>();
@@ -64,6 +77,11 @@ public class MongodbTimelineMapper implements TimelineMapper {
                     document.get("data", Binary.class).getData()));
         }
         return output;
+    }
+
+    public List<DataPoint> getDataPoints(int sensorId, long startTimestamp,
+                                         long endTimestamp, int limit) {
+        throw new UnsupportedOperationException();
     }
 
 }

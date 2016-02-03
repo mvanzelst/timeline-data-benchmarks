@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 public class Main {
 
     public static void main(String[] args) {
-        int numSensors = 5;
+        int numSensors = 200;
         int numDataPointsPerSensor = 1000;
         DataPointIterator dataPointIterator = new DataPointIterator(numSensors, 1024, numDataPointsPerSensor, 0);
 //        TimelineMapper mapper = new CassandraTimelineMapper();
@@ -24,7 +24,7 @@ public class Main {
         long start = System.currentTimeMillis();
         // Read back all the sensor data in random order
         for (Integer sensorId : sensorIds) {
-            List<DataPoint> dataPoints = mapper.getDataPoints(sensorId, -1, -1, -1);
+            List<DataPoint> dataPoints = mapper.getDataPoints(sensorId);
             if(dataPoints.size() != numDataPointsPerSensor){
                 throw new RuntimeException("Failed to read all data points");
             }

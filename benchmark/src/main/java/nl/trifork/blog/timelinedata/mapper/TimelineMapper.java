@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface TimelineMapper {
 
-    public void storeDataPoints(DataPointIterator dataPointIterator);
+    void storeDataPoints(DataPointIterator dataPointIterator);
 
-    public List<DataPoint> getDataPoints(int sensorId, long startTimestamp, long endTimestamp, int limit);
+    List<DataPoint> getDataPoints(int sensorId);
+
+    List<DataPoint> getDataPoints(int sensorId, long startTimestamp, long endTimestamp, int limit);
 
 }
