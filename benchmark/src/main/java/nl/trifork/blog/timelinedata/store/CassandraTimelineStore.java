@@ -34,7 +34,7 @@ public class CassandraTimelineStore implements TimelineStore {
         // Create event_counters table
         session.execute(
                 "CREATE TABLE IF NOT EXISTS sensor_data ( " +
-                        "sensor_id text, " +
+                        "sensor_id int, " +
                         "data blob, " +
                         "timestamp bigint, " +
                         "PRIMARY KEY (sensor_id, timestamp) " +

@@ -4,11 +4,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class DataPoint {
 
-    public final String sensorId;
+    public final int sensorId;
     public final long timestamp;
     public final byte[] data;
 
-    public DataPoint(String sensorId, long timestamp, byte[] data) {
+    public DataPoint(int sensorId, long timestamp, byte[] data) {
         this.sensorId = sensorId;
         this.timestamp = timestamp;
         this.data = data;

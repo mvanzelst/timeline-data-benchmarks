@@ -2,14 +2,14 @@ package nl.trifork.blog.timelinedata.mapper;
 
 import com.google.common.collect.Iterators;
 import nl.trifork.blog.timelinedata.DataPoint;
+import nl.trifork.blog.timelinedata.DataPointIterator;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class MongodbTimelineMapper implements TimelineMapper {
 
-    public void storeDataPoints(Iterator<DataPoint> dataPoints) {
-        Iterators.partition(dataPoints, 1000)
+    public void storeDataPoints(DataPointIterator dataPointIterator) {
+        Iterators.partition(dataPointIterator, 1000)
                 .forEachRemaining(dataPointBatch -> {});
 
     }
