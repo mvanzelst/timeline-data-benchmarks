@@ -21,3 +21,5 @@ RUN apt-get -y install cassandra
 EXPOSE 9160
 EXPOSE 9042
 EXPOSE 7199
+
+ENTRYPOINT ["/bin/bash"]

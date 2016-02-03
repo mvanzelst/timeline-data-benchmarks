@@ -1,1 +1,2 @@
-sudo docker build -t iot-benchmark/mongodb .
+#!/bin/bash
+sudo docker build -t timeline-benchmark/mongodb .

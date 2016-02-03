@@ -1,7 +1,7 @@
-FROM    ubuntu:latest
+FROM ubuntu:latest
 # Add 10gen official apt source to the sources list
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-RUN echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | tee /etc/apt/sources.list.d/10gen.list
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+RUN echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 
 # Hack for initctl not being available in Ubuntu
 #RUN dpkg-divert --local --rename --add /sbin/initctl
@@ -9,10 +9,8 @@ RUN echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen
 
 # Install MongoDB
 RUN apt-get update
-RUN apt-get install mongodb-10gen
+RUN apt-get install -y mongodb-org
 
-# Create the MongoDB data directory - This should be mounted with -v /tmp/mongodb-{instance_id}:/data/db
-RUN mkdir -p /data/db
+EXPOSE 27017
 
-#EXPOSE 27017
-ENTRYPOINT ["usr/bin/mongod"]
+ENTRYPOINT ["/bin/bash"]

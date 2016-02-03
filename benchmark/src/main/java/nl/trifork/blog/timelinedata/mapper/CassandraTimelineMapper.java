@@ -62,7 +62,7 @@ public class CassandraTimelineMapper implements TimelineMapper {
         session.close();
     }
 
-    public List<DataPoint> getDataPoints(String sensorId, long startTimestamp, long endTimestamp, int limit) {
+    public List<DataPoint> getDataPoints(int sensorId, long startTimestamp, long endTimestamp, int limit) {
         Where where = QueryBuilder.select().all().from("sensor_data").where();
 
         where.and(QueryBuilder.eq("sensor_id", sensorId));

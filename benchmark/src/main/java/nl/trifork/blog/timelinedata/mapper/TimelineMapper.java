@@ -9,6 +9,6 @@ public interface TimelineMapper {
 
     public void storeDataPoints(DataPointIterator dataPointIterator);
 
-    public List<DataPoint> getDataPoints(String sensorId, long startTimestamp, long endTimestamp, int limit);
+    public List<DataPoint> getDataPoints(int sensorId, long startTimestamp, long endTimestamp, int limit);
 
 }
