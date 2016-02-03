@@ -7,6 +7,8 @@ import org.bson.Document;
 
 public class MongoDbTimelineStore implements TimelineStore {
 
+    private final static MongoClient mongoClient = new MongoClient("172.17.0.1");
+
     public void initSchema() {
         MongoDatabase mongoDatabase = (MongoDatabase) getConnection();
         if(mongoDatabase.getCollection("time_series") != null){
@@ -18,7 +20,6 @@ public class MongoDbTimelineStore implements TimelineStore {
     }
 
     public Object getConnection() {
-        MongoClient mongoClient = new MongoClient("172.17.0.1");
         return mongoClient.getDatabase("time_series_db");
     }
 
