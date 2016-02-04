@@ -11,6 +11,4 @@ public interface TimelineMapper {
 
     List<DataPoint> getDataPoints(int sensorId);
 
-    List<DataPoint> getDataPoints(int sensorId, long startTimestamp, long endTimestamp, int limit);
-
 }

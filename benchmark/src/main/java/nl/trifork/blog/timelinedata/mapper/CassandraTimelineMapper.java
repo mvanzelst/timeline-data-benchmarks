@@ -2,8 +2,6 @@ package nl.trifork.blog.timelinedata.mapper;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.exceptions.QueryExecutionException;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select.Where;
 import com.google.common.collect.Iterators;
 import nl.trifork.blog.timelinedata.DataPoint;
 import nl.trifork.blog.timelinedata.DataPointIterator;
@@ -20,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
+import static com.datastax.driver.core.querybuilder.QueryBuilder.select;
 
 public class CassandraTimelineMapper implements TimelineMapper {
 
@@ -63,25 +64,7 @@ public class CassandraTimelineMapper implements TimelineMapper {
     }
 
     public List<DataPoint> getDataPoints(int sensorId) {
-        return getDataPoints(sensorId, -1, -1, -1);
-    }
-
-    public List<DataPoint> getDataPoints(int sensorId, long startTimestamp, long endTimestamp, int limit) {
-        Where where = QueryBuilder.select().all().from("sensor_data").where();
-
-        where.and(QueryBuilder.eq("sensor_id", sensorId));
-
-        if (startTimestamp > -1)
-            where.and(QueryBuilder.gte("timestamp", startTimestamp));
-
-        if (endTimestamp > -1)
-            where.and(QueryBuilder.lt("timestamp", endTimestamp));
-
-        if (limit > -1)
-            where.limit(limit);
-
-        Statement stmt = where;
-
+        Statement stmt = select().all().from("sensor_data").where(eq("sensor_id", sensorId));
         Session session = (Session) timelineStore.getConnection();
 
         List<DataPoint> output = new ArrayList<DataPoint>();
@@ -91,8 +74,7 @@ public class CassandraTimelineMapper implements TimelineMapper {
                     new DataPoint(
                             row.getInt("sensor_id"),
                             row.getLong("timestamp"),
-                            row.getBytes("data").array())
-            );
+                            row.getBytes("data").array()));
         }
 
         session.close();

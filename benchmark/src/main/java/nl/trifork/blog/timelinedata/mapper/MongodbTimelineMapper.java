@@ -79,9 +79,4 @@ public class MongodbTimelineMapper implements TimelineMapper {
         return output;
     }
 
-    public List<DataPoint> getDataPoints(int sensorId, long startTimestamp,
-                                         long endTimestamp, int limit) {
-        throw new UnsupportedOperationException();
-    }
-
 }

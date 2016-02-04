@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker build -t timeline-benchmark/cassandra .
+sudo docker build -t timeseries-benchmark/cassandra .

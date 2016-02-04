@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker build -t timeline-benchmark/mongodb .
+sudo docker build -t timeseries-benchmark/mongodb .

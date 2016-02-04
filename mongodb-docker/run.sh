@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker run --name timeline-benchmark-mongodb -i -t timeline-benchmark/mongodb
+sudo docker run --name timeseries-benchmark-mongodb -i -t timeseries-benchmark/mongodb

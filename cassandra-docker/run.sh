@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker run --name timeline-benchmark-cassandra -i -t timeline-benchmark/cassandra
+sudo docker run --name timeseries-benchmark-cassandra -i -t -v /media/marijn/data/cassandra-timeseries-benchmark:/var/lib/cassandra timeseries-benchmark/cassandra
