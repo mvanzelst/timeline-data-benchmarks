@@ -2,7 +2,6 @@ package nl.trifork.blog.timelinedata.mapper;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.exceptions.QueryExecutionException;
-import com.google.common.collect.Iterators;
 import nl.trifork.blog.timelinedata.DataPoint;
 import nl.trifork.blog.timelinedata.DataPointIterator;
 import nl.trifork.blog.timelinedata.store.CassandraTimelineStore;
@@ -26,7 +25,6 @@ public class CassandraTimelineMapper implements TimelineMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(TimelineStore.class);
 
-    private final int batchSize = 40;
     private final RetryTemplate retryTemplate;
 
     private TimelineStore timelineStore;
@@ -48,18 +46,20 @@ public class CassandraTimelineMapper implements TimelineMapper {
 
 
         AtomicInteger atomicInteger = new AtomicInteger();
-        Iterators.partition(dataPointIterator, batchSize)
-                .forEachRemaining(dataPointBatch -> {
-                    BatchStatement batch = new BatchStatement(BatchStatement.Type.UNLOGGED);
-                    for (DataPoint dataPoint : dataPointBatch) {
-                        batch.add(ps.bind(dataPoint.sensorId, dataPoint.timestamp, ByteBuffer.wrap(dataPoint.data)));
-                    }
-                    atomicInteger.getAndAdd(dataPointBatch.size());
-                    retryTemplate.execute((retryContext) -> session.execute(batch));
+        dataPointIterator.forEachRemaining(dataPoint -> {
+                BoundStatement bind = ps.bind(
+                        dataPoint.sensorId,
+                        dataPoint.timestamp,
+                        ByteBuffer.wrap(dataPoint.data));
+
+
+                retryTemplate.execute((retryContext) -> session.executeAsync(bind));
+                if(atomicInteger.incrementAndGet() % 1000 == 0) {
                     logger.info("Inserted {} records out of {} - {}%",
                             atomicInteger.get(), dataPointIterator.size(),
                             ((double) atomicInteger.get() / dataPointIterator.size()) * 100);
-                });
+                }
+        });
         session.close();
     }
 
