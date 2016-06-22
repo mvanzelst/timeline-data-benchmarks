@@ -1,7 +1,6 @@
 package nl.trifork.blog.timelinedata.mapper;
 
 import com.datastax.driver.core.*;
-import com.google.common.collect.Iterators;
 import nl.trifork.blog.timelinedata.DataPoint;
 import nl.trifork.blog.timelinedata.DataPointIterator;
 import nl.trifork.blog.timelinedata.store.CassandraTimelineStore;
@@ -39,16 +38,19 @@ public class CassandraTimelineMapper implements TimelineMapper {
 
 
         AtomicInteger atomicInteger = new AtomicInteger();
-        Iterators.partition(dataPointIterator, batchSize).forEachRemaining(dataPointBatch -> {
-                BatchStatement batchStatement = new BatchStatement(BatchStatement.Type.UNLOGGED);
-                dataPointBatch.forEach(dataPoint ->
-                        batchStatement.add(ps.bind(dataPoint.getSensorId(), dataPoint.getTimestamp(), ByteBuffer.wrap(dataPoint.getData()))));
+        dataPointIterator.forEachRemaining(dataPoint -> {
+            BoundStatement bind = ps.bind(
+                    dataPoint.getSensorId(),
+                    dataPoint.getTimestamp(),
+                    ByteBuffer.wrap(dataPoint.getData()));
 
-                session.execute(batchStatement);
+
+            session.executeAsync(bind);
+            if(atomicInteger.incrementAndGet() % 1000 == 0) {
                 logger.info("Inserted {} records out of {} - {}%",
-                        atomicInteger.addAndGet(dataPointBatch.size()), dataPointIterator.size(),
+                        atomicInteger.get(), dataPointIterator.size(),
                         ((double) atomicInteger.get() / dataPointIterator.size()) * 100);
-
+            }
         });
         session.close();
     }
