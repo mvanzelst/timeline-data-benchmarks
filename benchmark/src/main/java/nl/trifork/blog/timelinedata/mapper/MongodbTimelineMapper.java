@@ -27,9 +27,11 @@ public class MongodbTimelineMapper implements TimelineMapper {
 
     private final MongoDbTimelineStore timelineStore;
 
-    public MongodbTimelineMapper() {
+    public MongodbTimelineMapper(boolean initSchema) {
         timelineStore = new MongoDbTimelineStore();
-        timelineStore.initSchema();
+        if(initSchema) {
+            timelineStore.initSchema();
+        }
     }
 
     public void storeDataPoints(DataPointIterator dataPointIterator) {

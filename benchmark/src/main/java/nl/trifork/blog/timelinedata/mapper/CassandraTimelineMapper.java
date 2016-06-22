@@ -25,9 +25,11 @@ public class CassandraTimelineMapper implements TimelineMapper {
 
     private final int batchSize = 100;
 
-    public CassandraTimelineMapper() {
+    public CassandraTimelineMapper(boolean initSchema) {
         timelineStore = new CassandraTimelineStore();
-        timelineStore.initSchema();
+        if(initSchema){
+            timelineStore.initSchema();
+        }
     }
 
     public void storeDataPoints(DataPointIterator dataPointIterator) {
