@@ -1,7 +1,6 @@
 package nl.trifork.blog.timelinedata.mapper;
 
 import com.google.common.collect.Iterators;
-import com.mongodb.MongoClientException;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -14,13 +13,9 @@ import org.bson.Document;
 import org.bson.types.Binary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -31,16 +26,10 @@ public class MongodbTimelineMapper implements TimelineMapper {
     private final int batchSize = 1000;
 
     private final MongoDbTimelineStore timelineStore;
-    private final RetryTemplate retryTemplate;
 
     public MongodbTimelineMapper() {
         timelineStore = new MongoDbTimelineStore();
         timelineStore.initSchema();
-
-        Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>();
-        retryableExceptions.put(MongoClientException.class, true);
-        retryTemplate = new RetryTemplate();
-        retryTemplate.setRetryPolicy(new SimpleRetryPolicy(5, retryableExceptions));
     }
 
     public void storeDataPoints(DataPointIterator dataPointIterator) {
