@@ -42,7 +42,7 @@ public class CassandraTimelineMapper implements TimelineMapper {
                 dataPointBatch.forEach(dataPoint ->
                         batchStatement.add(ps.bind(dataPoint.getSensorId(), dataPoint.getTimestamp(), ByteBuffer.wrap(dataPoint.getData()))));
 
-                session.executeAsync(batchStatement);
+                session.execute(batchStatement);
                 logger.info("Inserted {} records out of {} - {}%",
                         atomicInteger.addAndGet(dataPointBatch.size()), dataPointIterator.size(),
                         ((double) atomicInteger.get() / dataPointIterator.size()) * 100);

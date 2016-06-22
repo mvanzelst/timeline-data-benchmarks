@@ -1,6 +1,6 @@
 package nl.trifork.blog.timelinedata;
 
-import nl.trifork.blog.timelinedata.mapper.CassandraTimelineMapper;
+import nl.trifork.blog.timelinedata.mapper.MongodbTimelineMapper;
 import nl.trifork.blog.timelinedata.mapper.TimelineMapper;
 
 import java.util.Collections;
@@ -20,8 +20,8 @@ public class Main {
         DataPointIterator dataPointIterator = new DataPointIterator(numSensors, 100, numDataPointsPerSensor, 0);
 
 
-        TimelineMapper mapper = new CassandraTimelineMapper();
-//        TimelineMapper mapper = new MongodbTimelineMapper();
+//        TimelineMapper mapper = new CassandraTimelineMapper();
+        TimelineMapper mapper = new MongodbTimelineMapper();
 
         // Store the data
         mapper.storeDataPoints(dataPointIterator);
