@@ -12,11 +12,18 @@ import java.util.stream.IntStream;
 public class Main {
 
     public static void main(String[] args) {
+
         int numSensors = 25000;
         int numDataPointsPerSensor = 10000;
+
+        // Create an iterator that iterates the given amount of sensors and amount of datapoints per sensor chronologically
         DataPointIterator dataPointIterator = new DataPointIterator(numSensors, 100, numDataPointsPerSensor, 0);
+
+
         TimelineMapper mapper = new CassandraTimelineMapper();
 //        TimelineMapper mapper = new MongodbTimelineMapper();
+
+        // Store the data
         mapper.storeDataPoints(dataPointIterator);
 
         List<Integer> sensorIds = IntStream.range(0, numSensors).boxed().collect(Collectors.toList());

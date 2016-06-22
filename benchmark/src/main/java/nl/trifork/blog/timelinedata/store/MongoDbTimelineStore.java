@@ -7,7 +7,7 @@ import org.bson.Document;
 
 public class MongoDbTimelineStore implements TimelineStore {
 
-    private final static MongoClient mongoClient = new MongoClient("172.17.0.1");
+    private final static MongoClient mongoClient = new MongoClient("127.0.0.1");
 
     public void initSchema() {
         MongoDatabase mongoDatabase = (MongoDatabase) getConnection();

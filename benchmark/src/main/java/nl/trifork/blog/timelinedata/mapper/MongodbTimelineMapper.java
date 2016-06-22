@@ -50,15 +50,19 @@ public class MongodbTimelineMapper implements TimelineMapper {
         AtomicInteger atomicInteger = new AtomicInteger();
         Iterators.partition(dataPointIterator, batchSize)
                 .forEachRemaining(dataPointBatch -> {
+
                     List<Document> documents = dataPointBatch.stream().map(dataPoint -> {
                         Document document = new Document();
-                        document.append("sensorId", dataPoint.sensorId);
-                        document.append("data", dataPoint.data);
-                        document.append("timestamp", dataPoint.timestamp);
+                        document.append("sensorId", dataPoint.getSensorId());
+                        document.append("data", dataPoint.getData());
+                        document.append("timestamp", dataPoint.getTimestamp());
                         return document;
                     }).collect(Collectors.toList());
+
                     atomicInteger.addAndGet(documents.size());
+
                     timeSeriesCollection.insertMany(documents);
+
                     logger.info("Inserted {} records out of {} - {}%",
                             atomicInteger.get(), dataPointIterator.size(),
                             ((double) atomicInteger.get() / dataPointIterator.size()) * 100);

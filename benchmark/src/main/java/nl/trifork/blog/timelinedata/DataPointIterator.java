@@ -3,6 +3,9 @@ package nl.trifork.blog.timelinedata;
 import java.util.Iterator;
 import java.util.Random;
 
+/**
+ * Iterates DataPoints chronologically
+ */
 public class DataPointIterator implements Iterator<DataPoint> {
 
     private final int dataSizePerDataPoint;

@@ -4,9 +4,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class DataPoint {
 
-    public final int sensorId;
-    public final long timestamp;
-    public final byte[] data;
+    private final int sensorId;
+    private final long timestamp;
+    private final byte[] data;
 
     public DataPoint(int sensorId, long timestamp, byte[] data) {
         this.sensorId = sensorId;
@@ -18,10 +18,21 @@ public class DataPoint {
     public String toString() {
         return String.format(
                 "sensorId: %s, timestamp: %s, dataChecksum: %s",
-                sensorId,
-                timestamp,
-                DigestUtils.md5Hex(data)
+                getSensorId(),
+                getTimestamp(),
+                DigestUtils.md5Hex(getData())
         );
     }
 
+    public int getSensorId() {
+        return sensorId;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
 }

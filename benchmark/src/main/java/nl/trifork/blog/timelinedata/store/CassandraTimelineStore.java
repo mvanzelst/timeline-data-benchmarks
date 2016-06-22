@@ -9,7 +9,7 @@ public class CassandraTimelineStore implements TimelineStore {
     private final Cluster cluster;
 
     public CassandraTimelineStore() {
-        cluster = Cluster.builder().addContactPoint("172.17.0.5").build();
+        cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
     }
 
     public void initSchema() {
