@@ -1,6 +1,6 @@
 package nl.trifork.blog.timelinedata;
 
-import nl.trifork.blog.timelinedata.mapper.CassandraTimelineMapper;
+import nl.trifork.blog.timelinedata.mapper.MongodbTimelineMapper;
 import nl.trifork.blog.timelinedata.mapper.TimelineMapper;
 
 import java.util.Collections;
@@ -23,8 +23,8 @@ public class Main {
         DataPointIterator dataPointIterator = new DataPointIterator(numSensors, 100, numDataPointsPerSensor, 0);
 
 
-        TimelineMapper mapper = new CassandraTimelineMapper(true);
-//        TimelineMapper mapper = new MongodbTimelineMapper(true);
+        //TimelineMapper mapper = new CassandraTimelineMapper(false);
+        TimelineMapper mapper = new MongodbTimelineMapper(true);
 
         // Store the data
         mapper.storeDataPoints(dataPointIterator);
@@ -34,7 +34,7 @@ public class Main {
 
         long startTotal = System.currentTimeMillis();
 
-        ExecutorService executorService = Executors.newFixedThreadPool(25);
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
 
 
         // Read back all the sensor data in random order
@@ -45,8 +45,8 @@ public class Main {
                 if(dataPoints.size() != numDataPointsPerSensor){
                     throw new RuntimeException("Failed to read all data points");
                 }
-                System.out.println(String.format("Reading back data took %s ms for sensor %s",
-                        System.currentTimeMillis() - start, sensorId));
+                System.out.println(String.format("Reading back data took %s ms for sensor %s, got %s points",
+                        System.currentTimeMillis() - start, sensorId, dataPoints.size()));
             });
         }
         executorService.shutdown();

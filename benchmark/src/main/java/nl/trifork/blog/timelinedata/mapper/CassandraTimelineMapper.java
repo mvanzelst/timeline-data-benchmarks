@@ -22,8 +22,6 @@ public class CassandraTimelineMapper implements TimelineMapper {
 
     private TimelineStore timelineStore;
 
-    private final int batchSize = 100;
-
     public CassandraTimelineMapper(boolean initSchema) {
         timelineStore = new CassandraTimelineStore();
         if(initSchema){

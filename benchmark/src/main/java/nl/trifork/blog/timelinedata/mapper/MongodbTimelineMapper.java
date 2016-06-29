@@ -37,13 +37,14 @@ public class MongodbTimelineMapper implements TimelineMapper {
     public void storeDataPoints(DataPointIterator dataPointIterator) {
         MongoDatabase db = (MongoDatabase) timelineStore.getConnection();
         MongoCollection<Document> timeSeriesCollection = db.getCollection("time_series");
-        timeSeriesCollection.withWriteConcern(WriteConcern.FSYNCED);
+        timeSeriesCollection.withWriteConcern(WriteConcern.JOURNALED);
         AtomicInteger atomicInteger = new AtomicInteger();
         Iterators.partition(dataPointIterator, batchSize)
                 .forEachRemaining(dataPointBatch -> {
-
+                    
                     List<Document> documents = dataPointBatch.stream().map(dataPoint -> {
                         Document document = new Document();
+                        document.append("_id", String.format("%s-%s", dataPoint.getSensorId(), dataPoint.getTimestamp()));
                         document.append("sensorId", dataPoint.getSensorId());
                         document.append("data", dataPoint.getData());
                         document.append("timestamp", dataPoint.getTimestamp());
